@@ -1,0 +1,44 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module src.server</title>
+<meta charset="utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.server</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:///C:/users/brian/projects/src/server.py">c:\users\brian\projects\src\server.py</a></font></td></tr></table>
+    <p><tt>Provides&nbsp;the&nbsp;WSGI&nbsp;application&nbsp;entry&nbsp;point&nbsp;for&nbsp;src&nbsp;microservices.&nbsp;This&nbsp;means<br>
+serving&nbsp;the&nbsp;WSGI-compliant&nbsp;app()&nbsp;method&nbsp;of&nbsp;a&nbsp;Service-derived&nbsp;object<br>
+instantiation&nbsp;using&nbsp;the&nbsp;built-in&nbsp;WSGI&nbsp;reference&nbsp;server.&nbsp;Command-line<br>
+arguments&nbsp;take&nbsp;a&nbsp;fully-qualified&nbsp;package/module/class&nbsp;name&nbsp;string&nbsp;to&nbsp;the<br>
+Service-derived&nbsp;class&nbsp;whose&nbsp;instantiation&nbsp;will&nbsp;be&nbsp;used&nbsp;to&nbsp;provide&nbsp;app().&nbsp;When<br>
+invoked&nbsp;from&nbsp;the&nbsp;command&nbsp;line&nbsp;without&nbsp;an&nbsp;argument,&nbsp;this&nbsp;defaults&nbsp;to&nbsp;the&nbsp;base<br>
+Service&nbsp;class.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="importlib.html">importlib</a><br>
+</td><td width="25%" valign=top><a href="src.service.html">src.service</a><br>
+</td><td width="25%" valign=top><a href="wsgiref.simple_server.html">wsgiref.simple_server</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-main"><strong>main</strong></a>(ip<font color="#909090">='127.0.0.1'</font>, port<font color="#909090">=8000</font>, Svc<font color="#909090">=&lt;class 'src.service.Service'&gt;</font>)</dt><dd><tt>Instantiates&nbsp;an&nbsp;object&nbsp;of&nbsp;the&nbsp;Service-derived&nbsp;class&nbsp;whose&nbsp;app()&nbsp;method<br>
+will&nbsp;be&nbsp;used&nbsp;to&nbsp;generate&nbsp;responses.&nbsp;This&nbsp;instance&nbsp;is&nbsp;then&nbsp;bound&nbsp;to&nbsp;a<br>
+reference&nbsp;WSGI&nbsp;server.&nbsp;The&nbsp;server&nbsp;is&nbsp;started&nbsp;on&nbsp;the&nbsp;given&nbsp;IP&nbsp;and&nbsp;port<br>
+(defaulting&nbsp;to&nbsp;127.0.0.1:8000),&nbsp;and&nbsp;the&nbsp;default&nbsp;Service&nbsp;class&nbsp;is&nbsp;the&nbsp;base<br>
+src.service.Service&nbsp;class&nbsp;itself.</tt></dd></dl>
+</td></tr></table>
+</body></html>
