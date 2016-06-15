@@ -17,7 +17,7 @@ def buildAllDocs(symbol=None):
        written to the package's 'docs/' folder.
     """
     if symbol is None:
-        symbol = 'src'
+        symbol = 'remisc'
     dd = getDocDir()
     obj, name = pydoc.resolve(symbol)
     page = pydoc.html.page(pydoc.describe(obj), pydoc.html.document(obj,name))

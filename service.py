@@ -5,7 +5,7 @@
 import importlib
 import json
 import urlparse
-from src.dxm import Empty
+from remisc.dxm import Empty
 
 def isop(func):
     """Defines the @isop decorator used to indicate specific methods of a
@@ -17,7 +17,7 @@ def isop(func):
     return func
 
 class Service(object):
-    """The base class for src-compliant microservice objects. Such objects
+    """The base class for ReMiSC-compliant microservice objects. Such objects
        define operations as methods using the @isop decorator. Data exchange
        models supporting such operations should be co-defined (or at least
        included) in the module where the Service-derived class is defined, and

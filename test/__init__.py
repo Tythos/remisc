@@ -24,7 +24,7 @@ def suite():
 	"""
 	ts = unittest.TestSuite()
 	for test_module in __all__:
-		m = importlib.import_module("src.test." + test_module)
+		m = importlib.import_module("remisc.test." + test_module)
 		for n in dir(m):
 			c = getattr(m, n)
 			if is_test_case(c):

@@ -2,7 +2,7 @@
 """
 
 import unittest
-from src import service
+from remisc import service
 
 class DefResTests(unittest.TestCase):
     def test_root(self):

@@ -1,8 +1,8 @@
-"""Unit tests for src operator and data exchange model decorators.
+"""Unit tests for ReMiSC operator and data exchange model decorators.
 """
 
 import unittest
-from src import dxm, service
+from remisc import dxm, service
 
 class OperatorTests(unittest.TestCase):
     def test_isop(self):

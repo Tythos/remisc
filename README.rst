@@ -1,23 +1,23 @@
-src
-===
+remisc
+======
 
-Scientific REST-ful Computation tools for rapid microservice development and
-deployment. Users define a class derived from src.service.Service, for which
-microservice operations are defined by methods decorated by *@src.service.isop*.
-Operations utilize user-defined models for data exchange, supported by I/O
-parsing behaviors defined in the src.dxm module.
+REST-ful microservice framework for scientific computing. Users define a class
+derived from remisc.service.Service, for which microservice operations are
+defined by methods decorated by *@remisc.service.isop*. Operations utilize
+user-defined models for data exchange, supported by I/O parsing behaviors
+defined in the *remisc.dxm* module.
 
 Services
 --------
 
-A new microservice is defined by subclassing *src.service.Service*. Methods of
-this class can be decorated by *@src.service.isop*. These operations take two
-inputs, the urlparse object of the request and a dictionary of any arguments
+A new microservice is defined by subclassing *remisc.service.Service*. Methods
+of this class can be decorated by *@remisc.service.isop*. These operations take
+two inputs, the urlparse object of the request and a dictionary of any arguments
 parsed from the URL's query string segment. They should return a textual
 response. A request will be mapped to an operation method by matching the method
 name to the top-level directory in the request URL (i.e., if a service is hosted
 on http://mysvcs.com/, the request to http://mysvcs.com/test will look for the
-method 'test' of the hosting Service-derived class.
+method 'test' of the host Service-derived class.
 
 The base Service class includes an *app()* method that defines a WSGI-compliant
 application interface used to parse request arguments, map them to the
@@ -29,7 +29,7 @@ Models
 Frequently, users must provide--or expect to receive--data formatted in
 accordance with specific models. Such data exchange formats can be defined by
 any class co-located with a Service-derived class, so long as they are
-decorated by *@src.dxm.isdxm*.
+decorated by *@remisc.dxm.isdxm*.
 
 Operations
 ----------
@@ -51,7 +51,7 @@ handling--if you're really into that sort of thing.
 _help
 ~~~~~
 
-This is one of the most powerful behaviors of the *src* framework. The *_help*
+This is one of the most powerful behaviors of the *remisc* framework. The *_help*
 operation returns documentation of all operations and data exchange models for
 the current Service-derived object. Operations are determined by evaluating all
 instance methods for the @isdxm decorator. Data exchange models are determined
@@ -63,7 +63,7 @@ what operations the service provides and how it may utilize them.
 Serving
 -------
 
-By default, the *src* package includs a *server* module that utilizes the
+By default, the *remisc* package includs a *server* module that utilizes the
 core module *wsgiref*'s *simple_server* model to host a Service. All
 Service-derived classes include a WSGI-compliant *app()* method invoked by the
 server host process. For production runs, it is strongly advised to invoke that

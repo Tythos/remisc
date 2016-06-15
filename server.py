@@ -1,4 +1,4 @@
-"""Provides the WSGI application entry point for src microservices. This means
+"""Provides the WSGI application entry point for ReMiSC microservices. This means
    serving the WSGI-compliant app() method of a Service-derived object
    instantiation using the built-in WSGI reference server. Command-line
    arguments take a fully-qualified package/module/class name string to the
@@ -9,7 +9,7 @@
 
 import importlib
 import sys
-from src import service
+from remisc import service
 from wsgiref import simple_server
 
 def main(ip='127.0.0.1', port=8000, Svc=service.Service):
@@ -17,7 +17,7 @@ def main(ip='127.0.0.1', port=8000, Svc=service.Service):
        will be used to generate responses. This instance is then bound to a
        reference WSGI server. The server is started on the given IP and port
        (defaulting to 127.0.0.1:8000), and the default Service class is the base
-       src.service.Service class itself.
+       remisc.service.Service class itself.
     """
     svc = Svc()
     httpd = simple_server.make_server(ip, port, svc.app)
