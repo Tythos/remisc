@@ -11,4 +11,7 @@ def isdxm(cls):
 
 @isdxm
 class Empty(object):
+    """This is an empty class used to define a data exchange model for testing,
+       demonstration, and (although completely unnecessary) extension purposes.
+    """
     pass
