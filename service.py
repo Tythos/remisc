@@ -2,19 +2,65 @@
    specific operations and meta-operations.
 """
 
-import importlib
-import json
 import urlparse
-from remisc.dxm import Empty
+import types
+import functools
 
-def isop(func):
-    """Defines the @isop decorator used to indicate specific methods of a
-       Service-derived class are meant to provide REST-ful operations. Such
-       methods take two arguments, the urlparse object for the request and a
-       dictionary of query string arguments.
+class IsOp(object):
+    """Defines the IsOp decorator, which can modify function in several use
+       cases. Note that, in all use cases, the function's docstring and an
+       'isop' flag (with a value of True) are appended to the function.
+        * When assigned without arguments, adds a default 'path' property to the
+          function based on the function name (preceeded by a file seperator).
+          In documentation, we refer to this as attributal decoration.
+        * When assigned with a single string argument, appends the given path to
+          the function. In documentation, we will refer to this as invocational
+          decoration.
     """
-    func.isop = True
-    return func
+    
+    def __init__(self, *args):
+        """Invoked at module evaluation time, when the class methods are parsed
+           (regardless of attributal or invocational decoration). Attributal
+           decoration will pass the function; invocational decoration will pass
+           the decorator argument.
+        """
+        self.func = None
+        self.path = None
+        self.help = None
+        if len(args) == 1 and type(args[0]) is types.FunctionType:
+            self.func = args[0]
+            self.path = '/' + self.func.__name__
+            self.help = self.func.__doc__
+        elif len(args) == 1 and type(args[0]) in [type(''),type(u'')]:
+            self.path = args[0]
+        else:
+            raise Exception('Invalid decorator construction')
+            
+    def __call__(self, *args, **kwargs):
+        """For attributal decoration, called when the method is invoked with the
+           given arguments as attached to the object instance by __get__. For
+           invocational decoration, this is invoked at module evaluation time
+           with the function as an argument and should return a decorator.
+        """
+        if self.func is not None:
+            return self.func(*args, **kwargs)
+        elif self.path is not None:
+            io = IsOp(args[0])
+            io.path = self.path
+            return io
+        else:
+            raise Exception('Invalid decorator invocation')
+            
+    def __get__(self, *args):
+        """Invoked when the method is fetched from an instance or class. In
+           either case, args[1] will be the class object. When method is fetched
+           from an instance, the instance will be the first argument.
+        """
+        func = functools.partial(self.__call__, args[0])
+        func.isop = True
+        func.path = self.path
+        func.help = self.help
+        return func
 
 class Service(object):
     """The base class for ReMiSC-compliant microservice objects. Such objects
@@ -25,9 +71,6 @@ class Service(object):
        the operation; when one is not provided, _root is invoked instead.
     """
 
-    def __init__(self):
-        pass
-        
     def getAllOps(self):
         """Returns the names of all operations provided by this instance of the
            Service class, as determined by the @isop decorator (which adds the
@@ -40,83 +83,49 @@ class Service(object):
                 opNames.append(attrName)
         return opNames
         
-    def getAllDxms(self):
-        """Returns all data exchange model (DXM) classes defined in conjunction
-           with this service object by iterating over the contents of the module
-           where this class is defined and returning the names of those classes
-           that have the 'isdxm' attribute (assigned by the @isdxm decorator).
-        """
-        dxms = []
-        cls = self.__class__
-        mod = importlib.import_module(cls.__module__)
-        clsType = type(cls)
-        for symName in dir(mod):
-            sym = getattr(mod, symName)
-            if hasattr(sym, 'isdxm') and type(sym) is clsType:
-                dxms.append(sym)
-        return dxms
-        
-    @isop
-    def _null(self, url, args):
+    @IsOp
+    def _null(self, **kwargs):
         """The default service response/operation--returns an empty string.
         """
         return ''
         
-    @isop
-    def _root(self, url, args):
+    @IsOp('/')
+    def _root(self, **kwargs):
         """Defines the root-level operation, where no arguments have been
            provided.
         """
         return 'Here is the base.'
 
-    @isop
-    def _help(self, url, args):
-        """Returns documentation of this service's operations and related data
-           exchange models (DXMs). Service operations are marked by the isop
-           function attribute (as added by the @isop decorator), while data
-           exchange models are marked by the isdxm class attribute (as added by
-           the @isdxm decorator). Operations are methods of the Service-derived
-           object, whereas DXMs are classes defined within the same module.
+    def application(self, environ, start_response):
+        """Feed environ parameters into urlparse object and query dictionary to
+           1) determine the appropriate operation to which those arguments will
+           be forwarded, and 2) invoke that operation to construct a response.
         """
-        opNames = self.getAllOps()
-        dxms = self.getAllDxms()
-        help = {'operations':{}, 'models': {}}
-        for opn in opNames:
-            op = getattr(self, opn)
-            help['operations'][opn] = op.__doc__
-        for dxm in dxms:
-            help['models'][dxm.__name__] = dxm.__doc__
-        txt = json.dumps(help)
-        return json.dumps(help, sort_keys=True, indent=4, separators=(',',': '))
-        
-    def app(self, env, res):
-        """Feed env parameters into urlparse object and query dictionary to 1)
-           determine the appropriate operation to which those arguments will be
-           forwarded, and 2) invoke that operation to construct a response.
-        """
-        url = env['wsgi.url_scheme'] + '://' + env['HTTP_HOST'] + env['PATH_INFO']
-        args = {}
-        if len(env['QUERY_STRING']) > 0:
-            url += '?' + env['QUERY_STRING']
-            args = urlparse.parse_qs(env['QUERY_STRING'])
-        o = urlparse.urlparse(url)
-        paths = o.path.split('/')
-        if len(''.join(paths)) > 1 and len(paths) > 1:
-            op = paths[1].lower()
+        fullUrl = environ['wsgi.url_scheme'] + '://' + environ['HTTP_HOST'] + environ['PATH_INFO'] + '?' + environ['QUERY_STRING']
+        pr = urlparse.urlparse(fullUrl)
+        args = urlparse.parse_qs(pr.query)
+        allOps = self.getAllOps()
+        allPaths = [getattr(self,op).path for op in allOps]
+        if pr.path not in allPaths:
+            print('"%s" => 404' % pr.path)
+            response = '404 Not Found'
+            start_response(response, [('Content-Type', 'text/plain')])
         else:
-            op = '_root'
-        if op == 'favicon.ico':
-            op = '_null'
-        m = getattr(self, op)
-        if not hasattr(m, 'isop'):
-            op = '_null'
-            m = getattr(self, op)
-        print('"%s" => "%s"' % (url, op))
-        try:
-            rsp = [m(o, args)]
-            res('200 OK', [('Content-Type', 'text/plain')])
-        except:
-            txt = '500 Internal Server Error'
-            rsp = [txt]
-            res(txt, [('Content-Type', 'text/plain')])
-        return rsp
+            ndx = allPaths.index(pr.path)
+            method = getattr(self, allOps[ndx])
+            print('"%s" => "%s"' % (pr.path, allOps[ndx]))
+            if environ['REQUEST_METHOD'] == 'GET':
+                try:
+                    response = method(**args)
+                    start_response('200 OK', [('Content-Type', 'text/plain')])
+                except Exception as e:
+                    response = '500 Internal Server Error'
+                    start_response(response, [('Content-Type', 'text/plain')])
+                    response += '\n' + e.message
+            elif environ['REQUEST_METHOD'] == 'OPTIONS':
+                response = re.sub('\s+', ' ', method.help).strip()
+                start_response('200 OK', [('Content-Type', 'text/plain')])
+            else:
+                response = '405 Method Not Allowed'
+                start_response(response, [('Content-Type', 'text/plain')])
+        return [response]

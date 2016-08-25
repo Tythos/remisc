@@ -20,7 +20,7 @@ def main(ip='127.0.0.1', port=8000, Svc=service.Service):
        remisc.service.Service class itself.
     """
     svc = Svc()
-    httpd = simple_server.make_server(ip, port, svc.app)
+    httpd = simple_server.make_server(ip, port, svc.application)
     fqn = Svc.__module__ + '.' + Svc.__name__
     print('Serving "%s" with wsgiref.simple_server @ %s:%u' % (fqn, ip, port))
     httpd.serve_forever()
